@@ -1,0 +1,47 @@
+name: Build and deploy website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unpack website source
+        run: unzip -q site-source.zip
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: life-health-community
+
+      - name: Build Astro site
+        run: npm run build
+        working-directory: life-health-community
+
+      - name: Deploy the built files by FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTPS_SERVER }}
+          username: ${{ secrets.FTPS_USERNAME }}
+          password: ${{ secrets.FTPS_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./life-health-community/dist/
+          server-dir: ${{ secrets.FTPS_SERVER_DIR }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**

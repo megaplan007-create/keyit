@@ -1,0 +1,61 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+interface Props {
+	title: string;
+	description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko">
+	<head>
+		<BaseHead title={`${title} | ${SITE_TITLE}`} description={description} />
+		<style>
+			main {
+				width: 760px;
+				max-width: calc(100% - 2em);
+				margin: 0 auto;
+				padding: 2em 1em 3em;
+				color: rgb(var(--gray-dark));
+				line-height: 1.8;
+			}
+			main :global(h1) {
+				margin-bottom: 0.6em;
+			}
+			main :global(h2) {
+				margin-top: 1.6em;
+				border-bottom: 1px solid rgba(var(--gray), 0.2);
+				padding-bottom: 0.3em;
+			}
+			main :global(ul) {
+				padding-left: 1.3em;
+			}
+			main :global(table) {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 1em 0;
+			}
+			main :global(th),
+			main :global(td) {
+				border: 1px solid rgba(var(--gray), 0.3);
+				padding: 0.6em;
+				text-align: left;
+			}
+			main :global(a) {
+				color: var(--accent);
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

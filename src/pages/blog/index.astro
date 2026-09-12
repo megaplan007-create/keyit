@@ -1,0 +1,77 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
+import { SITE_TITLE } from '../../consts';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const pageTitle = '전체 글';
+const pageDesc = `${SITE_TITLE}의 모든 생활·건강 정보 글을 최신순으로 모았습니다.`;
+---
+
+<!doctype html>
+<html lang="ko">
+	<head>
+		<BaseHead title={`${pageTitle} | ${SITE_TITLE}`} description={pageDesc} />
+		<style>
+			main {
+				max-width: 1000px;
+				margin: 0 auto;
+				padding: 0 1em;
+			}
+			.page-head {
+				text-align: center;
+				padding: 2em 0 1em;
+			}
+			.page-head h1 {
+				margin: 0 0 0.3em;
+			}
+			.page-head p {
+				color: rgb(var(--gray));
+				margin: 0;
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1.4em;
+				margin: 1.5em 0 3em;
+			}
+			.empty {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 3em 0;
+			}
+			@media (max-width: 860px) {
+				.grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+			@media (max-width: 560px) {
+				.grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="page-head">
+				<h1>{pageTitle}</h1>
+				<p>{pageDesc}</p>
+			</div>
+			{posts.length > 0 ? (
+				<div class="grid">
+					{posts.map((post) => <PostCard post={post} />)}
+				</div>
+			) : (
+				<p class="empty">아직 발행된 글이 없습니다.</p>
+			)}
+		</main>
+		<Footer />
+	</body>
+</html>

@@ -1,0 +1,106 @@
+---
+import { SITE_TITLE, CATEGORIES, CATEGORY_ORDER } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+	<nav>
+		<a class="brand" href="/">
+			<span class="brand-mark">🌿</span>
+			<span class="brand-name">{SITE_TITLE}</span>
+		</a>
+		<div class="internal-links">
+			<HeaderLink href="/">홈</HeaderLink>
+			{CATEGORY_ORDER.map((key) => (
+				<HeaderLink href={`/category/${CATEGORIES[key].slug}/`}>
+					{CATEGORIES[key].name}
+				</HeaderLink>
+			))}
+			<HeaderLink href="/blog/">전체글</HeaderLink>
+			<HeaderLink href="/about/">소개</HeaderLink>
+			<a class="cta" href="/contact/">문의하기</a>
+		</div>
+	</nav>
+</header>
+<style>
+	header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: saturate(180%) blur(12px);
+		-webkit-backdrop-filter: saturate(180%) blur(12px);
+		border-bottom: 1px solid rgb(var(--border));
+	}
+	nav {
+		max-width: var(--maxw);
+		margin: 0 auto;
+		padding: 0 1.2em;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.5em;
+		min-height: 62px;
+	}
+	.brand {
+		display: flex;
+		align-items: center;
+		gap: 0.45em;
+		font-weight: 800;
+		font-size: 1.15rem;
+		color: rgb(var(--black));
+		letter-spacing: -0.02em;
+	}
+	.brand:hover {
+		color: rgb(var(--black));
+	}
+	.brand-mark {
+		font-size: 1.3rem;
+	}
+	.internal-links {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.15em;
+	}
+	.internal-links :global(a) {
+		padding: 0.5em 0.8em;
+		color: rgb(var(--gray-dark));
+		font-size: 0.95rem;
+		font-weight: 500;
+		border-radius: 8px;
+		transition: background 0.15s ease, color 0.15s ease;
+	}
+	.internal-links :global(a:hover) {
+		background: var(--accent-soft);
+		color: var(--accent-dark);
+	}
+	.internal-links :global(a.active) {
+		color: var(--accent-dark);
+		font-weight: 700;
+		background: var(--accent-soft);
+	}
+	.cta {
+		background: var(--accent);
+		color: #fff !important;
+		padding: 0.5em 1.1em !important;
+		border-radius: 999px !important;
+		font-weight: 700 !important;
+		margin-left: 0.3em;
+	}
+	.cta:hover {
+		background: var(--accent-dark) !important;
+		color: #fff !important;
+	}
+	@media (max-width: 720px) {
+		nav {
+			justify-content: center;
+			padding: 0.5em 1em;
+		}
+		.internal-links :global(a) {
+			padding: 0.4em 0.6em;
+			font-size: 0.9rem;
+		}
+	}
+</style>

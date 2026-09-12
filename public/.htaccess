@@ -1,0 +1,9 @@
+# 없는 주소는 사이트 자체 404 페이지로 처리합니다.
+# 이 설정이 없으면 가비아 기본 오류 페이지(http://errdoc.gabia.io/404.html)로
+# 302 리다이렉트되어, 검색엔진이 소프트 404로 판단합니다.
+# (삭제한 글이 색인에서 빠지지 않는 원인)
+ErrorDocument 404 /404.html
+
+# 주의: Cloudflare SSL 모드가 Flexible이라 원본 서버는 http로 요청을 받습니다.
+# 여기에 https 강제 리다이렉트를 넣으면 무한 루프가 나므로 넣지 않습니다.
+# https 강제는 Cloudflare의 "Always Use HTTPS"가 이미 처리하고 있습니다.

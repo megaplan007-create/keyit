@@ -1,0 +1,32 @@
+---
+// 방문자 로그 분석 스크립트 모음.
+// consts.ts 의 ANALYTICS 값을 채운 것만 자동으로 삽입됩니다.
+// 개발 서버에서는 통계가 오염되지 않도록 아예 렌더링하지 않습니다.
+import { ANALYTICS } from '../consts';
+
+const isProd = import.meta.env.PROD;
+const ga4Id = ANALYTICS.ga4Id?.trim();
+const cfToken = ANALYTICS.cloudflareToken?.trim();
+---
+
+{isProd && ga4Id && (
+	<Fragment>
+		<script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
+		<script is:inline define:vars={{ ga4Id }}>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag('js', new Date());
+			gtag('config', ga4Id);
+		</script>
+	</Fragment>
+)}
+
+{isProd && cfToken && (
+	<script
+		defer
+		src="https://static.cloudflareinsights.com/beacon.min.js"
+		data-cf-beacon={JSON.stringify({ token: cfToken })}
+	></script>
+)}

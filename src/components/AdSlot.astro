@@ -1,0 +1,59 @@
+---
+// 애드센스 광고 슬롯.
+// ADSENSE_CLIENT 와 slot 이 모두 설정되면 실제 광고를, 아니면 자리표시(placeholder)를 보여줍니다.
+import { ADSENSE_CLIENT } from '../consts';
+
+interface Props {
+	slot?: string;
+	label?: string;
+}
+const { slot = '', label = '광고' } = Astro.props;
+const active = ADSENSE_CLIENT && slot;
+---
+
+{active ? (
+	<div class="ad-wrap">
+		<ins
+			class="adsbygoogle"
+			style="display:block"
+			data-ad-client={ADSENSE_CLIENT}
+			data-ad-slot={slot}
+			data-ad-format="auto"
+			data-full-width-responsive="true"
+		></ins>
+		<script is:inline>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	</div>
+) : (
+	<div class="ad-placeholder" aria-hidden="true">
+		<span>{label} 영역</span>
+		<small>애드센스 승인 후 자동 노출됩니다</small>
+	</div>
+)}
+
+<style>
+	.ad-wrap {
+		margin: 2em 0;
+		text-align: center;
+	}
+	.ad-placeholder {
+		margin: 2em 0;
+		padding: 1.5em;
+		border: 1px dashed rgba(var(--gray), 0.4);
+		border-radius: 8px;
+		text-align: center;
+		color: rgb(var(--gray));
+		background: rgba(var(--gray-light), 0.4);
+		display: flex;
+		flex-direction: column;
+		gap: 0.3em;
+	}
+	.ad-placeholder span {
+		font-weight: 700;
+		font-size: 0.95em;
+	}
+	.ad-placeholder small {
+		font-size: 0.8em;
+	}
+</style>

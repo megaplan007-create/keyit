@@ -1,0 +1,388 @@
+/*
+  생활건강 노트 — 전역 디자인 시스템
+  깔끔하고 현대적인 정보 사이트 스타일
+ */
+
+:root {
+	/* 브랜드 컬러 (틸그린) */
+	--accent: #00a885;
+	--accent-dark: #007a61;
+	--accent-light: #c3f0e6;
+	--accent-soft: #f0fbf8;
+
+	/* 카테고리 컬러 */
+	--cat-policy: #3b82f6;
+	--cat-life: #f59e0b;
+	--cat-health: #10b981;
+
+	/* 뉴트럴 (slate 기반) */
+	--black: 15, 23, 42;
+	--gray: 100, 116, 139;
+	--gray-light: 226, 232, 240;
+	--gray-dark: 30, 41, 59;
+
+	--bg: #f7f9fc;
+	--surface: #ffffff;
+	--border: 226, 232, 240;
+
+	--gray-gradient: rgba(var(--gray-light), 40%), var(--bg);
+	--box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.06);
+	--box-shadow-lg: 0 8px 30px rgba(15, 23, 42, 0.12);
+
+	--radius: 16px;
+	--radius-sm: 10px;
+	--maxw: 1080px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system,
+		BlinkMacSystemFont, 'Segoe UI', var(--font-atkinson), sans-serif;
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	background: var(--bg);
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	color: rgb(var(--gray-dark));
+	font-size: 17px;
+	line-height: 1.75;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	letter-spacing: -0.01em;
+}
+
+main {
+	width: 720px;
+	max-width: calc(100% - 2em);
+	margin: auto;
+	padding: 3em 1em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0 0 0.5rem 0;
+	color: rgb(var(--black));
+	line-height: 1.3;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+h1 {
+	font-size: 2.1rem;
+}
+h2 {
+	font-size: 1.55rem;
+}
+h3 {
+	font-size: 1.25rem;
+}
+h4 {
+	font-size: 1.1rem;
+}
+
+strong,
+b {
+	font-weight: 700;
+	color: rgb(var(--black));
+}
+
+a {
+	color: var(--accent-dark);
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+a:hover {
+	color: var(--accent);
+}
+
+p {
+	margin-bottom: 1.1em;
+}
+.prose p {
+	margin-bottom: 1.5em;
+}
+
+/* 본문 가독성 */
+.prose {
+	font-size: 1.05rem;
+}
+.prose h2 {
+	margin-top: 2em;
+	padding-bottom: 0.35em;
+	border-bottom: 2px solid var(--accent-light);
+}
+.prose h3 {
+	margin-top: 1.5em;
+	color: var(--accent-dark);
+}
+.prose ul,
+.prose ol {
+	padding-left: 1.3em;
+}
+.prose li {
+	margin-bottom: 0.4em;
+}
+.prose a {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	text-decoration-color: var(--accent-light);
+}
+
+textarea,
+input {
+	font-size: 16px;
+	font-family: inherit;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1.5em 0;
+	font-size: 0.95em;
+	background: var(--surface);
+	border-radius: var(--radius-sm);
+	overflow: hidden;
+	box-shadow: var(--box-shadow);
+}
+th,
+td {
+	padding: 0.75em 1em;
+	text-align: left;
+	border-bottom: 1px solid rgb(var(--border));
+}
+th {
+	background: var(--accent-soft);
+	color: var(--accent-dark);
+	font-weight: 700;
+}
+tr:last-child td {
+	border-bottom: none;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius-sm);
+}
+
+code {
+	padding: 2px 6px;
+	background-color: rgb(var(--gray-light));
+	border-radius: 5px;
+	font-size: 0.9em;
+}
+pre {
+	padding: 1.5em;
+	border-radius: var(--radius-sm);
+}
+pre > code {
+	all: unset;
+}
+
+blockquote {
+	border-left: 4px solid var(--accent);
+	padding: 0.5em 0 0.5em 1.2em;
+	margin: 1.5em 0;
+	background: var(--accent-soft);
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	font-size: 1.05em;
+	color: rgb(var(--gray-dark));
+}
+blockquote p:last-child {
+	margin-bottom: 0;
+}
+
+hr {
+	border: none;
+	border-top: 1px solid rgb(var(--gray-light));
+	margin: 2em 0;
+}
+
+@media (max-width: 720px) {
+	body {
+		font-size: 16px;
+	}
+	main {
+		padding: 1.5em 1em;
+	}
+	h1 {
+		font-size: 1.8rem;
+	}
+	h2 {
+		font-size: 1.4rem;
+	}
+}
+
+/* 글 상단 카테고리 배너 */
+.hero-banner {
+	width: 720px;
+	max-width: calc(100% - 2em);
+	margin: 1.2em auto 0;
+	aspect-ratio: 40 / 13;
+	border-radius: 14px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25em;
+	color: #fff;
+	box-shadow: var(--box-shadow);
+}
+.hb-emoji {
+	font-size: 3.4rem;
+	filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.28));
+}
+.hb-label {
+	font-weight: 700;
+	font-size: 1rem;
+	letter-spacing: 0.02em;
+	opacity: 0.95;
+}
+
+.sr-only {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* ── 본문 도표·체크리스트·사례 박스 ───────────────────────── */
+.figure {
+	margin: 2em 0;
+	padding: 1.2em 1em 0.8em;
+	background: var(--surface);
+	border: 1px solid rgb(var(--border));
+	border-radius: var(--radius-sm);
+	box-shadow: var(--box-shadow);
+	overflow-x: auto;
+}
+.figure svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	max-width: 640px;
+	margin: 0 auto;
+}
+.figure figcaption {
+	margin-top: 0.9em;
+	padding-top: 0.7em;
+	border-top: 1px dashed rgb(var(--border));
+	font-size: 0.85em;
+	line-height: 1.6;
+	color: rgb(var(--gray));
+	text-align: left;
+}
+
+.table-scroll {
+	overflow-x: auto;
+	margin: 1.5em 0;
+}
+.table-scroll table {
+	margin: 0;
+	min-width: 480px;
+}
+
+.checklist {
+	margin: 1.5em 0;
+	padding: 1.2em 1.4em;
+	background: var(--surface);
+	border: 1px solid rgb(var(--border));
+	border-left: 4px solid var(--accent);
+	border-radius: var(--radius-sm);
+}
+.checklist h4 {
+	margin: 0 0 0.7em;
+	font-size: 1em;
+}
+.checklist ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.checklist li {
+	position: relative;
+	padding: 0.35em 0 0.35em 1.8em;
+	line-height: 1.6;
+}
+.checklist li::before {
+	content: '☐';
+	position: absolute;
+	left: 0;
+	top: 0.3em;
+	color: var(--accent);
+	font-size: 1.1em;
+}
+
+.callout {
+	margin: 1.6em 0;
+	padding: 1em 1.2em;
+	border-radius: var(--radius-sm);
+	font-size: 0.95em;
+	line-height: 1.7;
+	border-left: 4px solid;
+}
+.callout p:last-child { margin-bottom: 0; }
+.callout .lbl {
+	display: block;
+	font-weight: 700;
+	margin-bottom: 0.35em;
+	font-size: 0.9em;
+	letter-spacing: 0.02em;
+}
+.callout.warn { background: #fff6ea; border-color: #d9822b; }
+.callout.warn .lbl { color: #a55f13; }
+.callout.case { background: #f2f6fc; border-color: #4a72b8; }
+.callout.case .lbl { color: #2f5493; }
+.callout.tip  { background: #f0f8f2; border-color: #3f9d5a; }
+.callout.tip .lbl { color: #2c7442; }
+
+.steps {
+	margin: 1.6em 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: step;
+}
+.steps > li {
+	position: relative;
+	padding: 0 0 1.1em 2.5em;
+	border-left: 2px solid rgb(var(--border));
+	margin-left: 0.85em;
+	line-height: 1.7;
+}
+.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+.steps > li::before {
+	counter-increment: step;
+	content: counter(step);
+	position: absolute;
+	left: -0.85em;
+	top: 0;
+	width: 1.7em;
+	height: 1.7em;
+	border-radius: 50%;
+	background: var(--accent);
+	color: #fff;
+	font-size: 0.8em;
+	font-weight: 700;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.steps strong { display: inline-block; margin-bottom: 0.15em; }
