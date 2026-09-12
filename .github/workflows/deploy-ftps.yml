@@ -32,7 +32,7 @@ jobs:
           server: ${{ secrets.FTPS_SERVER }}
           username: ${{ secrets.FTPS_USERNAME }}
           password: ${{ secrets.FTPS_PASSWORD }}
-          protocol: ftp
+          protocol: ftps
           port: 21
           local-dir: ./dist/
           server-dir: ${{ secrets.FTPS_SERVER_DIR }}
