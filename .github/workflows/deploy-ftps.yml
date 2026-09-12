@@ -20,26 +20,21 @@ jobs:
         with:
           node-version: 22
 
-      - name: Unpack website source
-        run: unzip -q site-source.zip
-
       - name: Install dependencies
         run: npm ci
-        working-directory: life-health-community
 
       - name: Build Astro site
         run: npm run build
-        working-directory: life-health-community
 
-      - name: Deploy the built files by FTPS
+      - name: Deploy the built files by FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTPS_SERVER }}
           username: ${{ secrets.FTPS_USERNAME }}
           password: ${{ secrets.FTPS_PASSWORD }}
-          protocol: ftps
+          protocol: ftp
           port: 21
-          local-dir: ./life-health-community/dist/
+          local-dir: ./dist/
           server-dir: ${{ secrets.FTPS_SERVER_DIR }}
           exclude: |
             **/.git*
