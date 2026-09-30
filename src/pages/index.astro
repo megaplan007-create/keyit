@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import PostCard from '../components/PostCard.astro';
 import AdSlot from '../components/AdSlot.astro';
+import HotTopics from '../components/HotTopics.astro';
 import {
 	SITE_TITLE,
 	SITE_DESCRIPTION,
@@ -373,6 +374,9 @@ const values = [
 					<div class="editorial-points"><span>01 공식 기관 원문 확인</span><span>02 놓치기 쉬운 예외 정리</span><span>03 갱신일·출처 공개</span></div>
 				</div>
 			</div>
+
+			<!-- 오늘의 핫이슈: 최근 글의 대표 주제를 버블로 -->
+			<HotTopics posts={allPosts} />
 
 			<!-- 소개 + 가치 -->
 			<section class="intro">

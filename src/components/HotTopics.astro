@@ -1,0 +1,285 @@
+---
+// 홈 '오늘의 핫이슈' 버블 차트 — 글마다 대표 태그 하나를 버블로 보여줍니다.
+// 최근에 발행된 글일수록 버블이 크고, 색은 카테고리 색을 따릅니다.
+// 배치는 빌드 시점에 계산하므로 클라이언트 JS 없이도 그대로 렌더링됩니다.
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES, CATEGORY_ORDER } from '../consts';
+
+interface Props {
+	posts: CollectionEntry<'blog'>[];
+	limit?: number;
+}
+const { posts, limit = 16 } = Astro.props;
+
+const recent = [...posts]
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, limit);
+
+// 반지름: 가장 최근 글 1.0 → 가장 오래된 글 0.55
+const items = recent.map((post, i) => ({
+	post,
+	label: post.data.tags[0] ?? post.data.title,
+	r: recent.length > 1 ? 1 - (0.45 * i) / (recent.length - 1) : 1,
+}));
+
+// ── 원 패킹: 큰 원부터 중심에 가장 가까운 겹치지 않는 자리에 놓습니다 ──
+type Circle = { x: number; y: number; r: number };
+const GAP = 0.06;
+const placed: Circle[] = [];
+const fits = (c: Circle) => placed.every((p) => Math.hypot(p.x - c.x, p.y - c.y) >= p.r + c.r + GAP - 1e-9);
+// 가로로 약간 넓은 배치가 화면에 잘 맞도록 세로 거리에 가중치를 둡니다.
+const cost = (c: Circle) => Math.hypot(c.x, c.y * 1.25);
+
+for (const { r } of items) {
+	if (placed.length === 0) {
+		placed.push({ x: 0, y: 0, r });
+		continue;
+	}
+	const candidates: Circle[] = [];
+	// 원 하나에 접하는 자리
+	for (const p of placed) {
+		for (let k = 0; k < 24; k++) {
+			const a = (k / 24) * Math.PI * 2;
+			const d = p.r + r + GAP;
+			candidates.push({ x: p.x + d * Math.cos(a), y: p.y + d * Math.sin(a), r });
+		}
+	}
+	// 원 두 개에 동시에 접하는 자리
+	for (let i = 0; i < placed.length; i++) {
+		for (let j = i + 1; j < placed.length; j++) {
+			const A = placed[i];
+			const B = placed[j];
+			const ra = A.r + r + GAP;
+			const rb = B.r + r + GAP;
+			const dx = B.x - A.x;
+			const dy = B.y - A.y;
+			const d = Math.hypot(dx, dy);
+			if (d > ra + rb || d < Math.abs(ra - rb) || d === 0) continue;
+			const along = (ra * ra - rb * rb + d * d) / (2 * d);
+			const h = Math.sqrt(Math.max(0, ra * ra - along * along));
+			const mx = A.x + (dx * along) / d;
+			const my = A.y + (dy * along) / d;
+			candidates.push({ x: mx - (dy * h) / d, y: my + (dx * h) / d, r });
+			candidates.push({ x: mx + (dy * h) / d, y: my - (dx * h) / d, r });
+		}
+	}
+	const best = candidates.filter(fits).sort((a, b) => cost(a) - cost(b))[0];
+	placed.push(best);
+}
+
+// 경계 상자 기준 백분율 좌표로 변환
+const minX = Math.min(...placed.map((c) => c.x - c.r));
+const maxX = Math.max(...placed.map((c) => c.x + c.r));
+const minY = Math.min(...placed.map((c) => c.y - c.r));
+const maxY = Math.max(...placed.map((c) => c.y + c.r));
+const W = maxX - minX;
+const H = maxY - minY;
+
+const bubbles = items.map((item, i) => {
+	const c = placed[i];
+	const cat = item.post.data.category;
+	const len = [...item.label].length;
+	return {
+		href: `/blog/${item.post.id}/`,
+		title: item.post.data.title,
+		label: item.label,
+		category: cat,
+		left: ((c.x - c.r - minX) / W) * 100,
+		top: ((c.y - c.r - minY) / H) * 100,
+		size: ((2 * c.r) / W) * 100,
+		// 글자 크기: 컨테이너 너비(cqw) 기준, 반지름과 글자 수에 맞춰 줄입니다.
+		font: Math.min(0.42, 1.55 / len) * ((c.r / W) * 100),
+		// 최근 글일수록 진하게
+		strength: i < 2 ? 'lv1' : i < 6 ? 'lv2' : 'lv3',
+	};
+});
+
+const latestDate = recent.reduce(
+	(max, p) => Math.max(max, (p.data.updatedDate ?? p.data.pubDate).valueOf()),
+	0,
+);
+const basis = new Date(latestDate).toLocaleDateString('ko-KR', {
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit',
+	timeZone: 'Asia/Seoul',
+});
+---
+
+{bubbles.length > 0 && (
+	<section class="hot" data-filter="all">
+		<div class="hot-head">
+			<div>
+				<h2>🔥 오늘의 핫이슈</h2>
+				<p class="hot-basis">{basis} 갱신 기준 · 최근 글일수록 크게 표시됩니다</p>
+			</div>
+			<div class="hot-tabs" role="group" aria-label="카테고리 필터">
+				<button type="button" data-cat="all" aria-pressed="true">전체</button>
+				{CATEGORY_ORDER.map((key) => (
+					<button type="button" data-cat={key} aria-pressed="false">
+						{CATEGORIES[key].name}
+					</button>
+				))}
+			</div>
+		</div>
+
+		<div class="hot-board" style={`aspect-ratio:${W.toFixed(3)} / ${H.toFixed(3)}`}>
+			{bubbles.map((b) => (
+				<a
+					class={`bubble ${b.strength}`}
+					href={b.href}
+					title={b.title}
+					data-cat={b.category}
+					style={`left:${b.left.toFixed(2)}%;top:${b.top.toFixed(2)}%;width:${b.size.toFixed(2)}%;--c:var(--cat-${b.category});font-size:${b.font.toFixed(2)}cqw`}
+				>
+					<span>{b.label}</span>
+				</a>
+			))}
+		</div>
+
+		<ul class="hot-legend">
+			{CATEGORY_ORDER.map((key) => (
+				<li><i style={`background:var(--cat-${key})`}></i>{CATEGORIES[key].name}</li>
+			))}
+		</ul>
+	</section>
+)}
+
+<script>
+	for (const hot of document.querySelectorAll<HTMLElement>('.hot')) {
+		const buttons = hot.querySelectorAll<HTMLButtonElement>('.hot-tabs button');
+		for (const btn of buttons) {
+			btn.addEventListener('click', () => {
+				hot.dataset.filter = btn.dataset.cat;
+				for (const b of buttons) b.setAttribute('aria-pressed', String(b === btn));
+			});
+		}
+	}
+</script>
+
+<style>
+	.hot {
+		max-width: 760px;
+		margin: 4.5em auto;
+		padding: 0 1.2em;
+	}
+	.hot-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1em;
+		flex-wrap: wrap;
+		margin-bottom: 1.6em;
+	}
+	.hot-head h2 {
+		font-size: 1.6rem;
+		margin: 0;
+	}
+	.hot-basis {
+		margin: 0.2em 0 0;
+		font-size: 0.88rem;
+		color: rgb(var(--gray));
+	}
+	.hot-tabs {
+		display: flex;
+		gap: 0.25em;
+		padding: 0.3em;
+		border-radius: 999px;
+		background: rgb(var(--gray-light));
+		flex-wrap: wrap;
+	}
+	.hot-tabs button {
+		border: 0;
+		background: transparent;
+		padding: 0.4em 0.95em;
+		border-radius: 999px;
+		font: inherit;
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: rgb(var(--gray));
+		cursor: pointer;
+	}
+	.hot-tabs button[aria-pressed='true'] {
+		background: #fff;
+		color: rgb(var(--gray-dark));
+		box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+	}
+
+	.hot-board {
+		position: relative;
+		width: 100%;
+		container-type: inline-size;
+	}
+	.bubble {
+		position: absolute;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		text-decoration: none;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1.15;
+		color: #fff;
+		background: var(--c);
+		transition: transform 0.18s ease, opacity 0.2s ease, filter 0.2s ease;
+	}
+	.bubble span {
+		padding: 0 8%;
+		word-break: keep-all;
+	}
+	.bubble.lv2 {
+		background: color-mix(in srgb, var(--c) 78%, #fff);
+	}
+	.bubble.lv3 {
+		background: color-mix(in srgb, var(--c) 45%, #fff);
+		color: color-mix(in srgb, var(--c) 70%, #000);
+	}
+	.bubble:hover,
+	.bubble:focus-visible {
+		transform: scale(1.06);
+		z-index: 1;
+		color: #fff;
+		background: var(--c);
+	}
+	.hot:not([data-filter='all']) .bubble {
+		opacity: 0.18;
+		filter: grayscale(0.6);
+	}
+	.hot[data-filter='policy'] .bubble[data-cat='policy'],
+	.hot[data-filter='life'] .bubble[data-cat='life'],
+	.hot[data-filter='health'] .bubble[data-cat='health'] {
+		opacity: 1;
+		filter: none;
+	}
+
+	.hot-legend {
+		display: flex;
+		justify-content: center;
+		gap: 1.2em;
+		list-style: none;
+		padding: 0;
+		margin: 1.4em 0 0;
+		font-size: 0.85rem;
+		color: rgb(var(--gray));
+	}
+	.hot-legend li {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+	.hot-legend i {
+		width: 0.7em;
+		height: 0.7em;
+		border-radius: 50%;
+	}
+
+	@media (max-width: 560px) {
+		.hot-head {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+</style>
