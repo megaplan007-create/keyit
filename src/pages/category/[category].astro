@@ -7,9 +7,10 @@ import PostCard from '../../components/PostCard.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import { SITE_TITLE, SITE_URL, CATEGORIES, CATEGORY_ORDER, ADSENSE_SLOTS } from '../../consts';
 import type { CategoryKey } from '../../consts';
+import { isPublished } from '../../lib/posts';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	const posts = await getCollection('blog', ({ data }) => isPublished(data));
 	return CATEGORY_ORDER.map((key) => ({
 		params: { category: CATEGORIES[key].slug },
 		props: {

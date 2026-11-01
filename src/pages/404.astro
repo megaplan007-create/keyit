@@ -2,11 +2,10 @@
 import { getCollection } from 'astro:content';
 import Page from '../layouts/Page.astro';
 import { SITE_TITLE, CATEGORIES, CATEGORY_ORDER } from '../consts';
+import { getPublishedPosts } from '../lib/posts';
 
 // 방문자를 사이트 밖으로 내보내지 않도록, 최근 글을 함께 안내합니다.
-const latest = (await getCollection('blog', ({ data }) => !data.draft))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 5);
+const latest = (await getPublishedPosts()).slice(0, 5);
 ---
 
 <Page

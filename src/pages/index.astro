@@ -13,10 +13,9 @@ import {
 	CATEGORY_ORDER,
 	ADSENSE_SLOTS,
 } from '../consts';
+import { getPublishedPosts } from '../lib/posts';
 
-const allPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const allPosts = await getPublishedPosts();
 const latest = allPosts.slice(0, 6);
 
 const websiteSchema = {

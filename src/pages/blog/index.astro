@@ -5,10 +5,9 @@ import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import PostCard from '../../components/PostCard.astro';
 import { SITE_TITLE } from '../../consts';
+import { getPublishedPosts } from '../../lib/posts';
 
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const posts = await getPublishedPosts();
 const pageTitle = '전체 글';
 const pageDesc = `${SITE_TITLE}의 모든 생활·건강 정보 글을 최신순으로 모았습니다.`;
 ---
