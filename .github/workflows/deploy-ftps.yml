@@ -41,7 +41,11 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./dist/
-          server-dir: ${{ secrets.FTPS_SERVER_DIR }}
+          # FTP 로그인 직후 위치가 곧 웹 루트입니다(FileZilla에서 / 에 index.html 확인).
+          # 이 액션은 server-dir 이 "/" 로 끝나지 않으면 접속 전에 즉시 실패하므로,
+          # 비밀값 대신 안전한 기본값을 직접 지정합니다.
+          server-dir: ./
+          log-level: verbose
           exclude: |
             **/.git*
             **/.git*/**
